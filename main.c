@@ -14,6 +14,80 @@ double df(double x) {
     return (f(x+h) - f(x - h))/(2*h);
 }
 
+//Метод половинного ділення
+void solve_bisection(double a, double b, double eps) {
+    printf("\n=== МЕТОД ПОЛОВИННОГО ДІЛЕННЯ ===\n");
+
+    if (f(a) * f(b) >= 0) {
+        printf("Помилка: На кінцях відрізка [a, b] функція має однакові знаки!\n");
+        return;
+    }
+
+    int iter = 0;
+    double c = a;
+
+    while (1){
+        iter++;
+        c = (a + b)/ 2.0;
+        double fc = f(c);
+
+        if (fabs(b - a)/ 2.0 < eps || fabs(fc) < eps){
+            break;
+        }
+
+        if (f(a) * fc < 0){
+            b = c;
+        } else {
+            a = c;}
+    }
+
+    printf("\n--- РЕЗУЛЬТАТ (Метод половинного ділення) ---\n");
+    printf("Знайдений корінь x     = %.8lf\n", c);
+    printf("Значення функції f(x)  = %.8e\n", f(c));
+    printf("Значення похідної f'(x)= %.8lf\n", df(c));
+    printf("Кількість ітерацій    = %d\n", iter);
+}
+
+//Метод хорд
+void solve_chord(double a, double b, double eps) {
+    printf("\n=== МЕТОД ХОРД ===\n");
+
+    if (f(a) * f(b) >= 0){
+        printf("Помилка: На кінцях відрізка [a, b] функція має однакові знаки!\n");
+        return;
+    }
+
+    int iter = 0;
+    double x_curr;
+    double x_prev;
+
+    int case_type = (f(a) > 0) ? 1 : 2;
+    x_curr = (case_type == 1) ? b : a;
+
+    while (1){
+        iter++;
+        x_prev = x_curr;
+
+        if (case_type == 1){
+            x_curr = x_prev - (f(x_prev) * (x_prev - a))/(f(x_prev)-f(a));
+        } else {
+            x_curr = x_prev - (f(x_prev) * (b - x_prev))/(f(b) - f(x_prev));
+            }
+        double fx = f(x_curr);
+
+        if (fabs(x_curr - x_prev) < eps || fabs(fx) < eps){
+            break;
+        }
+    }
+
+    printf("\n--- РЕЗУЛЬТАТ (Метод хорд) ---\n");
+    printf("Знайдений корінь x     = %.8lf\n", x_curr);
+    printf("Значення функції f(x)  = %.8e\n", f(x_curr));
+    printf("Значення похідної f'(x)= %.8lf\n", df(x_curr));
+    printf("Кількість ітерацій    = %d\n", iter);
+
+}
+
 int main()
 {
     SetConsoleCP(1251);
@@ -37,15 +111,6 @@ int main()
     printf("Увімкнути режим налагодження (вивід кожної ітерації)? (1 - Так, 0 - Ні): ");
     scanf("%d", &debug_mode);
 
-    // Перевірка умови наявності кореня
-    printf("\n--- ПЕРЕВІРКА УМОВ НА ПРОМІЖКУ [%.2lf, %.2lf] ---\n", a, b);
-    printf("f(a) = %.4lf, f(b) = %.4lf\n", f(a), f(b));
-    if (f(a) * f(b) < 0) {
-        printf("Знаки f(a) та f(b) протилежні (f(a)*f(b) < 0) -> корінь на проміжку ІСНУЄ.\n");
-    } else {
-        printf("УВАГА: f(a)*f(b) >= 0. На цьому проміжку може не бути кореня або їх декілька!\n");
-    }
-
     do {
         printf("\n================ ТЕКСТОВЕ МЕНЮ ================\n");
         printf("1 - Розв'язати методом половинного ділення\n");
@@ -57,13 +122,14 @@ int main()
 
         switch (choice) {
             case 1:
-                printf("\n[Заглушка] Метод половинного ділення\n");
+                solve_bisection(a, b, eps);
                 break;
             case 2:
-                printf("\n[Заглушка] Метод хорд\n");
+                solve_chord(a, b, eps);
                 break;
             case 3:
-                printf("\n[Заглушка] Обчислення обома методами\n");
+                solve_bisection(a, b, eps);
+                solve_chord(a, b, eps);
                 break;
             case 0:
                 printf("\nПрограма завершила роботу.\n");
