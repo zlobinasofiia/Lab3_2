@@ -1,7 +1,8 @@
 # depslib dependency file v1.0
-1791901705 source:d:\учеба\универ\информатика\ЛР3 Ч2\main.c
+1791904617 source:d:\учеба\универ\информатика\ЛР3 Ч2\main.c
 	<stdio.h>
 	<stdlib.h>
 	<math.h>
+	<time.h>
 	<windows.h>
 
